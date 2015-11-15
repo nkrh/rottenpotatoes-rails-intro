@@ -17,24 +17,21 @@ class MoviesController < ApplicationController
   end
 
   def index
-    
     if params[:sort]
       params[:sort].split('|').each do |column_name|
-        if Movie.column_names.include? column_name
-          session[:sort][column_name.to_sym] = :asc
-        end
+        session[:sort][column_name.to_sym] = :asc if Movie.column_names.include? column_name
       end
-      redirect_to movies_path
+    elsif not session[:sort].length.zero?
+      redirect_to movies_path params.merge sort: session[:sort].keys.join('|')
+      return
     end
     
     if params[:ratings] and not params[:ratings].length.zero?
       session[:filter] = {'rating' => params[:ratings].keys}
-      redirect_to movies_path
     end
 
     @sort = session[:sort]
-
-    @filter = session[:filter] 
+    @filter = session[:filter]
     @all_ratings = ['G', 'PG', 'PG-13', 'R'];
     @movies = Movie.where(@filter).order(@sort)
 
