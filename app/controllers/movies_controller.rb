@@ -17,6 +17,7 @@ class MoviesController < ApplicationController
   end
 
   def index
+    
     if params[:sort]
       params[:sort].split('|').each do |column_name|
         session[:sort][column_name.to_sym] = :asc if Movie.column_names.include? column_name
@@ -28,6 +29,9 @@ class MoviesController < ApplicationController
     
     if params[:ratings] and not params[:ratings].length.zero?
       session[:filter] = {'rating' => params[:ratings].keys}
+    elsif not session[:sort]['rating'].nil?
+      redirect_to movies_path params.merge ratings: session[:filter]['rating']
+      return
     end
 
     @sort = session[:sort]
