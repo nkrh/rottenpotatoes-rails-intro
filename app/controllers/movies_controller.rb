@@ -24,14 +24,16 @@ class MoviesController < ApplicationController
           session[:sort][column_name.to_sym] = :asc
         end
       end
+      redirect_to movies_path
     end
     
     if params[:ratings] and not params[:ratings].length.zero?
       session[:filter] = {'rating' => params[:ratings].keys}
+      redirect_to movies_path
     end
 
     @sort = session[:sort]
-    puts @sort.to_s
+
     @filter = session[:filter] 
     @all_ratings = ['G', 'PG', 'PG-13', 'R'];
     @movies = Movie.where(@filter).order(@sort)
