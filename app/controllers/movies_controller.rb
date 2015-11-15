@@ -24,7 +24,7 @@ class MoviesController < ApplicationController
     if !session[:sort].length.zero? and !params[:sort]
       redirect_params[:sort] = session[:sort].keys.join('|') 
     end
-    
+
     if !session[:filter]['rating'].nil? and !params[:ratings]
       rating_hash = {}
       session[:filter]['rating'].each do |rating|
@@ -33,8 +33,9 @@ class MoviesController < ApplicationController
       redirect_params[:ratings] = rating_hash
     end
     
+    # Redirect to current path with new params
     if !redirect_params.empty?
-      redirect_to movies_path params.merge(redirect_params)
+      redirect_to movies_path params.permit(:sort, :ratings).merge(redirect_params)
       return
     end
     
