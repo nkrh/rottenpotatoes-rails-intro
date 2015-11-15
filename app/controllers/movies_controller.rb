@@ -18,20 +18,36 @@ class MoviesController < ApplicationController
 
   def index
     
-    if params[:sort]
-      params[:sort].split('|').each do |column_name|
-        session[:sort][column_name.to_sym] = :asc if Movie.column_names.include? column_name
+    # Check if we miss some query params while they are exist in session
+    redirect_params = {}
+    
+    if !session[:sort].length.zero? and !params[:sort]
+      redirect_params[:sort] = session[:sort].keys.join('|') 
+    end
+    
+    if !session[:filter]['rating'].nil? and !params[:ratings]
+      rating_hash = {}
+      session[:filter]['rating'].each do |rating|
+        rating_hash[rating] = 1
       end
-    elsif not session[:sort].length.zero?
-      redirect_to movies_path params.merge sort: session[:sort].keys.join('|')
+      redirect_params[:ratings] = rating_hash
+    end
+    
+    if !redirect_params.empty?
+      redirect_to movies_path params.merge(redirect_params)
       return
+    end
+    
+    if params[:sort]
+      sort_hash = {}
+      params[:sort].split('|').each do |column_name|
+        sort_hash[column_name.to_sym] = :asc if Movie.column_names.include? column_name
+      end
+      session[:sort] = sort_hash
     end
     
     if params[:ratings] and not params[:ratings].length.zero?
       session[:filter] = {'rating' => params[:ratings].keys}
-    elsif not session[:sort]['rating'].nil?
-      redirect_to movies_path params.merge ratings: session[:filter]['rating']
-      return
     end
 
     @sort = session[:sort]
