@@ -31,6 +31,7 @@ class MoviesController < ApplicationController
     end
 
     @sort = session[:sort]
+    puts @sort.to_s
     @filter = session[:filter] 
     @all_ratings = ['G', 'PG', 'PG-13', 'R'];
     @movies = Movie.where(@filter).order(@sort)
