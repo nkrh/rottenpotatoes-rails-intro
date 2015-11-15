@@ -31,10 +31,10 @@ class MoviesController < ApplicationController
     end
 
     @sort = session[:sort]
-    @filter = session[:filter]
+    @filter = session[:filter] 
     @all_ratings = ['G', 'PG', 'PG-13', 'R'];
     @movies = Movie.where(@filter).order(@sort)
-    
+
   end
 
   def new
